@@ -25,13 +25,16 @@ def fetch_players(session, url):
             return None
         soup = BeautifulSoup(response.text, 'html.parser')
         players = {}
+        base_url = 'https://ork.amtgard.com'  # Define the base URL once
         for row in soup.select("table.information-table tbody tr"):
             cells = row.find_all('td')
             if len(cells) >= 3:  # Ensure there are enough cells
                 player_link = cells[2].find('a')  # The player link is in the third cell
                 if player_link and 'href' in player_link.attrs:
-                    player_id = player_link['href'].split('/')[-1]
-                    full_url = 'https://ork.amtgard.com' + player_link['href']
+                    href = player_link['href']
+                    # Check if href already contains the base URL
+                    full_url = href if href.startswith(base_url) else base_url + href
+                    player_id = href.split('/')[-1]
                     players[player_id] = {'url': full_url, 'name': player_link.get_text()}
         if not players:
             print(f"No players found at {url}")

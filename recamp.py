@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 import time
 from datetime import datetime
+import sys
 
 def login(session, username, password):
     login_url = "https://ork.amtgard.com/orkui/index.php?Route=Login/login"
@@ -11,16 +12,14 @@ def login(session, username, password):
         if response.status_code == 200:
             print()
             print("Logged in successfully.")
-            print()
+            time.sleep(2)  # Rate limiting
         else:
             print()
             print(f"Login failed with status code: {response.status_code}")
-            print()
             return False
     except requests.RequestException as e:
         print()
         print(f"Error during login: {e}")
-        print()
         return False
     return True
 
@@ -30,7 +29,6 @@ def fetch_players(session, url):
         if response.status_code != 200:
             print()
             print(f"Failed to fetch players from {url}. Status code: {response.status_code}")
-            print()
             return None
         soup = BeautifulSoup(response.text, 'html.parser')
         players = {}
@@ -47,12 +45,10 @@ def fetch_players(session, url):
         if not players:
             print()
             print(f"No players found at {url}")
-            print()
         return players
     except requests.RequestException as e:
         print()
         print(f"Error fetching players from {url}: {e}")
-        print()
         return None
 
 def get_player_details(session, player_id):
@@ -77,15 +73,32 @@ def get_player_details(session, player_id):
     except requests.RequestException as e:
         print()
         print(f"Error fetching details for player {player_id}: {e}")
-        print()
         return None
+
+# Progress bar function. Shamelessly stolen from Stack Exchange. Keeping the parameters comment for future reference.
+def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=50, fill='█'):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filled_length = int(length * iteration // total)
+    bar = fill * filled_length + '-' * (length - filled_length)
+    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix}')
+    sys.stdout.flush()
 
 session = requests.Session()
 if not login(session, 'your_username', 'your_password'):
     print()
     exit("Login failed, exiting script.")
 
-print()
 print("Comparing active and dues paid players...")
 print()
 
@@ -99,15 +112,27 @@ if active_players is None or dues_players is None:
 
 matched_players = {pid: active_players[pid] for pid in active_players if pid in dues_players}
 
+total_players = len(matched_players)
+print(f"{total_players} eligible players found.")
 print()
-print(f"Found {len(matched_players)} matching players.")
+time.sleep(.5)
+print(f"Gathering details for {total_players} players. Please wait...")
 print()
 
-for player_id, player_info in matched_players.items():
+# Initial call to print 0% progress
+print_progress_bar(0, total_players, prefix='Progress:', suffix='Complete', length=50)
+
+# Iterate through matches and gather data.
+for i, (player_id, player_info) in enumerate(matched_players.items(), 1):
     details = get_player_details(session, player_id)
     if details:
         player_info.update(details)
     time.sleep(2)  # Rate limiting
+    print_progress_bar(i, total_players, prefix='Progress:', suffix='Complete', length=50)
+
+time.sleep(.5)
+print()
+print("Detail collection complete.")
 
 current_time = datetime.now().strftime('%Y%m%d%H%M')
 
@@ -121,4 +146,6 @@ with open(filename, 'w', newline='', encoding='utf-8') as file:
     for player_info in matched_players.values():
         writer.writerow(player_info)
 
-print(f"Data saved to {filename}")
+time.sleep(.5)
+print()
+print(f"Details saved to {filename}")

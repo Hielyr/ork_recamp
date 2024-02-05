@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ork-recamp"
-version = "0.2.0"
+version = "0.2.15"
 description = "RECAMP (Record Examination and Comparison for Active Membership and dues Payments)"
 authors = ["Hielyr <7991705+Hielyr@users.noreply.github.com>"]
 readme = "README.md"

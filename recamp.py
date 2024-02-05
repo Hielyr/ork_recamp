@@ -12,6 +12,7 @@ def login(session, username, password):
         if response.status_code == 200:
             print()
             print("Logged in successfully.")
+            print()
             time.sleep(2)  # Rate limiting
         else:
             print()
@@ -99,7 +100,7 @@ if not login(session, 'your_username', 'your_password'):
     print()
     exit("Login failed, exiting script.")
 
-print("Comparing active and dues paid players...")
+print("Comparing active and dues paid players reports...")
 print()
 
 active_players = fetch_players(session, "https://ork.amtgard.com/orkui/index.php?Route=Reports/active/Kingdom&id=11")
@@ -132,6 +133,7 @@ for i, (player_id, player_info) in enumerate(matched_players.items(), 1):
 
 time.sleep(.5)
 print()
+print()
 print("Detail collection complete.")
 
 current_time = datetime.now().strftime('%Y%m%d%H%M')
@@ -149,3 +151,4 @@ with open(filename, 'w', newline='', encoding='utf-8') as file:
 time.sleep(.5)
 print()
 print(f"Details saved to {filename}")
+print()

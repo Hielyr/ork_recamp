@@ -89,7 +89,7 @@ Contributions to RECAMP are welcome. Please ensure that you test your changes th
 
 ## License
 
-RECAMP has been release under the [GPL-3.0](https://github.com/Hielyr/ork_recamp?tab=GPL-3.0-1-ov-file) license,
+RECAMP has been release under the [GPL-3.0](https://github.com/Hielyr/ork_recamp?tab=GPL-3.0-1-ov-file) license.
 
 ## Contact
 

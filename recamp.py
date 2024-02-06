@@ -13,7 +13,7 @@ def login(session, username, password):
             print()
             print("Logged in successfully.")
             print()
-            time.sleep(2)  # Rate limiting
+            time.sleep(1.5)
         else:
             print()
             print(f"Login failed with status code: {response.status_code}")
@@ -104,7 +104,6 @@ print("Comparing active and dues paid players reports...")
 print()
 
 active_players = fetch_players(session, "https://ork.amtgard.com/orkui/index.php?Route=Reports/active/Kingdom&id=11")
-time.sleep(2)  # Rate limiting
 dues_players = fetch_players(session, "https://ork.amtgard.com/orkui/index.php?Route=Reports/dues/Kingdom&id=11")
 
 if active_players is None or dues_players is None:
@@ -116,7 +115,7 @@ matched_players = {pid: active_players[pid] for pid in active_players if pid in 
 total_players = len(matched_players)
 print(f"{total_players} eligible players found.")
 print()
-time.sleep(.5)
+time.sleep(1.5)
 print(f"Gathering details for {total_players} players. Please wait...")
 print()
 
@@ -128,10 +127,9 @@ for i, (player_id, player_info) in enumerate(matched_players.items(), 1):
     details = get_player_details(session, player_id)
     if details:
         player_info.update(details)
-    time.sleep(2)  # Rate limiting
     print_progress_bar(i, total_players, prefix='Progress:', suffix='Complete', length=50)
 
-time.sleep(.5)
+time.sleep(1.5)
 print()
 print()
 print("Detail collection complete.")
@@ -148,7 +146,7 @@ with open(filename, 'w', newline='', encoding='utf-8') as file:
     for player_info in matched_players.values():
         writer.writerow(player_info)
 
-time.sleep(.5)
+time.sleep(1.5)
 print()
 print(f"Details saved to {filename}")
 print()
